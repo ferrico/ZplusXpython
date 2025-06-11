@@ -26,13 +26,30 @@ dct_xs_jake = {
     # The cross section is in the 'Generator Parameters' column to the right.
     #== Instructions above are old! ==#
     ###################################
+    # Run3 #
+#    'DY10' : 18610.0,
+#    'DY50' : 5558, # from AN2023_157_v7
+#    'TT'   : 762.1, # from AN2023_157_v7
+#    'WZ'   : 5.26, # After much deliberation, use 5.26 for UL samples. For aMCatNLO and mll > 30 GeV. #AN-19-139v6=4.43 (4.42965), #v1=4.9 (from MCM).
+#    'WZ-ext1-v2' : 4.9, # Elisa used this WZ sample.
+#    'ZZ'   : 1.39, # from AN2023_157_v7
+#    'Data' : -1  # Can be anything.
+    # Run3 #
+
+
+    # Run2 #
     'DY10' : 18610.0,
     'DY50' : 6077.22, # From [2] and [3].
     'TT'   : 87.31,
-    'WZ'   : 5.26, # After much deliberation, use 5.26 for UL samples. For aMCatNLO and mll > 30 GeV. #AN-19-139v6=4.43 (4.42965), #v1=4.9 (from MCM).
+    #'WZ'   : 5.26, # After much deliberation, use 5.26 for UL samples. For aMCatNLO and mll > 30 GeV. #AN-19-139v6=4.43 (4.42965), #v1=4.9 (from MCM).
     'WZ-ext1-v2' : 4.9, # Elisa used this WZ sample.
-    'ZZ'   : 1.256, # From MCM.,
-    'Data' : -1  # Can be anything.
+    #'ZZ'   : 1.256, # From MCM.,
+    'Data' : -1,  # Can be anything.
+    # Run2 #
+
+    # Run3 #
+    'WZ'   : 4.924, # from AN2023_157_v7
+    'ZZ'   : 1.39,
 }
 
 xs_dct_vukasin = {
@@ -55,6 +72,10 @@ LUMI_INT_2016_UL_postVFP = 16810
 LUMI_INT_2016_UL = LUMI_INT_2016_UL_preVFP + LUMI_INT_2016_UL_postVFP
 LUMI_INT_2017_UL = 41798
 LUMI_INT_2018_UL = 58951
+LUMI_INT_20220 = 7980
+LUMI_INT_20225 = 26670
+LUMI_INT_20230 = 17794
+LUMI_INT_20235 = 9451
 
 dct_sumgenweights_2016_UL_preVFP = {
     #=== Who processed Data 2016 UL pre-VFP: Kun
@@ -125,18 +146,62 @@ n_totevts_dataset_dct = {
     'ZZ'         : 96412000,
     'Data'       : 1,
 }
-
-n_sumgenweights_dataset_dct_jake = {
+'''
+###### preEE ######
+n_sumgenweights_dataset_dct_jake = { # FILIPPO
     # 'Nickname' : sum of gen weights in MC file, sumWeights.GetBinContent(1).
     'DY10'       : -1,  # Not yet analyzed.
-    'DY50'       : 127085880.0,
-    'TT'         : 62977964.0,
+    'DY50'       : 10055814932,
+    'TT'         : 54276862897,
     'WZ'         : 6397150.0,  # v1.
     'WZ-ext1-v2' : 6967813.0,
     'WZ_vukasin' : 6739437,
-    'ZZ'         : 95655496.0,
+    'ZZ'         : 21959210693,
     'Data'       : 1,
 }
+'''
+###### preEE ######
+
+
+###### postEE ######
+n_sumgenweights_dataset_dct_jake = { # FILIPPO
+    # Run3 #
+#    'DY50'       : 10120,
+#    'TT'         : 190490970918,
+#    'WZ'         : 14804975448,
+#    'ZZ'         : 90392173610,
+#    'Data'       : 1,
+    # Run3 #
+
+    # Run2 #
+    'DY10'       : -1,  # Not yet analyzed.
+    'DY50'       : 127085880.0,
+    'TT'         : 62977964.0,
+#    'WZ'         : 6397150.0,  # v1.
+    'WZ-ext1-v2' : 6967813.0,
+    'WZ_vukasin' : 6739437,
+#    'ZZ'         : 95655496.0,
+    'Data'       : 1,
+
+###NANOAOD_v9
+#    'WZ'    : 6291564,
+#    'ZZ'    : 97491912,
+    # Run2 #
+
+    # 2022-preEE # ---- v12
+#    'WZ'    :  2770795,
+#    'ZZ'    : 14477723,
+    # 2022-postEE # ---- v12
+#    'WZ'    : 9760064,
+#    'ZZ'    : 60737568,
+    # 2023-pre BPix # ---- v12
+    'WZ'    : 5522000,
+    'ZZ'    : 29832000,
+    # 2023-post BPix # ---- v12
+#    'WZ'    : 10312000,
+#    'ZZ'    : 14625000,
+    }
+###### postEE ######
 
 n_sumgenweights_dataset_dct_vukasin = {
     # 'Nickname' : sum of gen weights in MC file, sumWeights.GetBinContent(1).
@@ -151,4 +216,5 @@ n_sumgenweights_dataset_dct_vukasin = {
 }
 
 n_sumgenweights_dataset_dct_filippo = n_sumgenweights_dataset_dct_jake.copy()
-n_sumgenweights_dataset_dct_filippo['ZZ'] = 86951072.0
+#n_sumgenweights_dataset_dct_filippo['ZZ'] = 21959210693 # 2022preEE
+#n_sumgenweights_dataset_dct_filippo['ZZ'] = 90392173610 # 2022postEE

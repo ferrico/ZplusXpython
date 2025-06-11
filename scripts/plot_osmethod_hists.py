@@ -29,11 +29,11 @@ from Utils_ROOT.Printer import CanvasPrinter
 from Utils_Python.Utils_Files import check_overwrite, make_dirs
 from Utils_Python.printing import announce
 
-year = 2016
-lumi = LUMI_INT_2016_UL_preVFP  # 1/pb
-dct_sumgenwgts = dct_sumgenweights_2016_UL_preVFP
+year = 2018
+lumi = LUMI_INT_2018_UL # 1/pb
+dct_sumgenwgts = dct_sumgenweights_2018_UL
 # outfile_path = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/plots/osmethodxBF_hists_2016ULpreVFP_AN19139colors.pdf"
-outfile_path = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/plots/osmethodxBF_hists_2016ULpreVFP_AN19139colors.pdf"
+outfile_path = "./MinorOne/Prova.pdf"
 
 dct_xs = dct_xs_jake
 overwrite = 0
@@ -44,11 +44,11 @@ color_scheme = "AN19139" #"AN16442" #
 
 dct_samples = {
     #=== NOTE: The first plot here will be the bottommost in h_stack!
-    "ZZ": "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/skim_osmethod_perfectxBFsync_2016_ZZ_preVFP.root",
-    "WZ": "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/skim_osmethod_perfectxBFsync_2016_WZ_preVFP.root",
-    "TT": "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/skim_osmethod_perfectxBFsync_2016_TT_preVFP.root",
-    "DY50": "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/skim_osmethod_perfectxBFsync_2016_DY50_preVFP.root",
-    "Data": "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/skim_osmethod_perfectxBFsync_2016_Data_preVFP.root",
+    "ZZ": "/eos/user/f/ferrico/MinorOne/ZZTo4L_MinorOne.root",
+    "WZ": "/eos/user/f/ferrico/MinorOne/WZTo3LNu_MinorOne.root",
+    "TT": "/eos/user/f/ferrico/MinorOne/TTTo2L2Nu_MinorOne.root",
+    "DY50": "/eos/user/f/ferrico/MinorOne/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX_minorOne.root",
+    "Data": "/eos/user/f/ferrico/MinorOne/Data_SingleMuonEgamma_minorOne_noDuplicates.root",
 
     # "ZZ": "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/skim_osmethodnew_2018_ZZ.root",
     # "WZ": "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/skim_osmethodnew_2018_WZ.root",

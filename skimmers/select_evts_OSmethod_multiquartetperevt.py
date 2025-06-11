@@ -69,21 +69,16 @@ from sidequests.funcs.evt_loops import (
     select_evts_2P2F_3P1F_multiquartets
     )
 from sidequests.data.filepaths import (
-    data_2016_UL_ge4lepskim,
-    data_2016_UL_preVFP_ge4lepskim,
-    data_2017_UL, data_2017_UL_ge3lepskim, data_2017_UL_ge4lepskim,
-    data_2018_UL, data_2018_UL_ge3lepskim, data_2018_UL_ge4lepskim,
-    mc_2017_UL_ZZ, mc_2017_UL_ZZ_ge3lepskim,
-    mc_2018_UL_ZZ, mc_2018_UL_ZZ_ge3lepskim,
+    data_2018_UL,
+    mc_2018_UL_ZZ, 
+    #
+    #
+    #
+    #mc_2018_UL_ZZ_ge3lepskim,
     # infile_filippo_data_2018_fromhpg,
     # infile_filippo_zz_2018_fromhpg,
     # mc_2018_zz_hpg,
-    fakerates_WZremoved_2017_UL,
-    fakerates_WZremoved_2018_UL,
-    fakerates_WZremoved_2016_UL_woFSR_preVFP,
-    fakerates_WZremoved_2016_UL_woFSR_postVFP,
-    fakerates_WZremoved_2017_UL_woFSR,
-    fakerates_WZremoved_2018_UL_woFSR
+    #fakerates_WZremoved_2017_UL,
     )
 from Utils_Python.Utils_Files import check_overwrite, make_dirs
 from Utils_Python.Commands import shell_cmd
@@ -92,10 +87,15 @@ from constants.analysis_params import (
     LUMI_INT_2016_UL_postVFP,
     LUMI_INT_2017_UL,
     LUMI_INT_2018_UL,
+    LUMI_INT_20220,
+    LUMI_INT_20225,
+    LUMI_INT_20230,
+    LUMI_INT_20235,
     dct_sumgenweights_2016_UL_preVFP,
     dct_sumgenweights_2016_UL_postVFP,
     dct_sumgenweights_2017_UL,
     dct_sumgenweights_2018_UL,
+    n_sumgenweights_dataset_dct_jake,
     # n_sumgenweights_dataset_dct_jake,
     # n_sumgenweights_dataset_dct_filippo,
     dct_xs_jake
@@ -106,46 +106,29 @@ from constants.analysis_params import (
 #########################
 # Files to analyze.
 d_nicknames_files = {
-    # 'Data': data_2016_UL_ge4lepskim,
-    'Data': data_2016_UL_preVFP_ge4lepskim,
-    # 'ZZ': mc_2016_UL_ZZ,
-    # 'ZZ': mc_2016_UL_ZZ_ge4lepskim,
-
-    # 'Data': data_2017_UL,
-    # 'Data': data_2017_UL_ge3lepskim,
-    # 'Data': data_2017_UL_ge4lepskim,
-    # 'ZZ': mc_2017_UL_ZZ,
-    # 'ZZ': mc_2017_UL_ZZ_ge3lepskim,
-
-    # 'Data': data_2018_UL,
-    # 'Data': data_2018_UL_ge3lepskim,
-    # 'Data': data_2018_UL_ge4lepskim,
-    # 'ZZ': mc_2018_UL_ZZ,
-    # 'ZZ': mc_2018_UL_ZZ_ge3lepskim,
-
-    # "Data" : infile_filippo_data_2018_fromhpg,
-    # "ZZ" : mc_2018_zz_hpg,
-    # "ZZ" : infile_filippo_zz_2018_fromhpg,
+     'Data': data_2018_UL,
+#     'ZZ': mc_2018_UL_ZZ,
 }
-year = 2016
-genwgts_dct = dct_sumgenweights_2016_UL_preVFP
-int_lumi = LUMI_INT_2016_UL_preVFP
-infile_FR_wz_removed = fakerates_WZremoved_2016_UL_woFSR_preVFP
+year = 2018
+genwgts_dct = n_sumgenweights_dataset_dct_jake#dct_sumgenweights_2018_UL
+int_lumi = LUMI_INT_20230 #LUMI_INT_2018_UL
+infile_FR_wz_removed = "./Muon_MVAsip8_20230/Hist_Data_test_NEW_WZremoved.root"
+#infile_FR_wz_removed = "Muon_2022EE/Hist_NEW.root"
 dct_xs = dct_xs_jake
 
 # outdir_root = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/test/verify/"
-outdir_root = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/redbkgskim/test/"
-outdir_json = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/json/test/"
+outdir_root = "/eos/user/f/ferrico/Muon_MVAsip8/20230/"
+outdir_json = "/eos/user/f/ferrico/Muon_MVAsip8/20230/"
 # Produces a root file with TTree and hists, and a json file with evtID info.
 # basename gets appended with file nickname:
 # outfile_basename = "osmethodnew_UL_somenegfrs_stopwhenfound3p1f_nomatchlepHindex_multiquart_recalcmasses_noskipmass4llt0_allowz1failleps"
-outfile_basename = "skim_osmethod_perfectxBFsync_test02"
-suffix = "preVFP"
+outfile_basename = "test_20230_vNEW_v2"
+suffix = "2018"
 
 start_at_evt = 0
-break_at_evt = -1  # Use -1 to run over all events.
-print_every = 100_000
-explain_skipevent = 0
+break_at_evt = -1 # Use -1 to run over all events.
+print_every = 1_000_000
+explain_skipevent = 0 # was 0 -----> CHANGE IT FOR DEBUGGING
 
 fill_hists = 0
 hadd_files = 0  # Only when running on Data and ZZ in series.
@@ -153,11 +136,11 @@ hadd_files = 0  # Only when running on Data and ZZ in series.
 #=== Bools to control analysis flow. ===#
 # Choose one or the other, or neither.
 use_multiquart_sel = 0
-sync_with_xBFAna = 1  # If True, will override the bools below.
+sync_with_xBFAna = 0 # WAS 1 NANOAOD  # If True, will override the bools below.
 #=== Alternatively, fine-tune the analyzer. ===#
 stop_when_found_3p1f = 1  # If a 3P1F ZZ cand is found, don't build 2P2F.
 match_lep_Hindex = 0  # Only keep quartets whose Z1 and Z2 match lep_Hindex.
-keep_one_quartet = 0
+keep_one_quartet = 1 # was 0 -----> CHANGE IT FOR DEBUGGING
 recalc_masses = 1
 skip_mass4l_lessthan0 = 0
 skip_passedFullSelection = 1
@@ -182,7 +165,7 @@ if __name__ == '__main__':
     verbose = args.verbose
 
     year_in_name = [infile_FR_wz_removed] + list(d_nicknames_files.values())
-    assert all(str(year) in name for name in year_in_name)
+#    assert all(str(year) in name for name in year_in_name) #NANOAOD
 
     # Base names below will have name of data type appended ("Data", "ZZ").
     outfile_base_root = f"{outfile_basename}.root"
@@ -203,6 +186,7 @@ if __name__ == '__main__':
     ls_all_outfiles = []
     for name, inpath in d_nicknames_files.items():
 
+        print(name + " --- " + str(inpath))
         ending = f"{year}_{name}_{suffix}"
         new_base_json = outfile_base_json.replace(".json", f"_{ending}.json")
         new_base_root = outfile_base_root.replace(".root", f"_{ending}.root")
@@ -214,8 +198,10 @@ if __name__ == '__main__':
             os.path.dirname(outfile_json),
             )
 
+        print(inpath)
         infile = TFile.Open(inpath, "read")
-        tree = infile.Get("passedEvents")
+#        tree = infile.Get("passedEvents") #MINIAOD
+        tree = infile.Get("Events") # NANOAOD
         print(
             f"Successfully opened:\n{inpath}\n"
             f"  Processing: year={year}, name={name}"

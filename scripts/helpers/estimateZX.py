@@ -12,7 +12,7 @@ import sys
 import os
 from scripts.helpers.analyzeZX import get_evt_weight, setHistProperties
 from constants.analysis_params import (
-    xs_dct_jake, MZ_PDG, LUMI_INT_2018_Jake, n_sumgenweights_dataset_dct_jake
+    dct_xs_jake, MZ_PDG, LUMI_INT_2018_Jake, n_sumgenweights_dataset_dct_jake
     )
 from Utils_Python.Utils_Files import check_overwrite
 
@@ -132,12 +132,12 @@ def estimateZX(FakeRateFile, tree, Nickname, outfile_dir, suffix="",
         #     if (Nickname=="ZZ"):
         #         weight *= 1.256*lumi*event.k_qqZZ_qcd_M*event.k_qqZZ_ewk/lNEvents
         weight = get_evt_weight(
-                    xs_dct=xs_dct_jake,
+                    dct_xs_jake,
                     Nickname=Nickname,
                     lumi=lumi,
                     event=event,
                     n_dataset_tot=n_dataset_tot,
-                    orig_evt_weight=event.eventWeight
+                    orig_evt_weight=1#event.eventWeight #FILIPPO
                     )
         
         if event.passedZXCRSelection:
@@ -190,12 +190,17 @@ def estimateZX(FakeRateFile, tree, Nickname, outfile_dir, suffix="",
             m4l = event.mass4l
 
             # failed lep = not (tight and good e/mu)
-            iso_lep_2 = (abs(idL[2])==11) or (abs(idL[2])==13 and lep_iso[2]<0.35)
-            iso_lep_3 = (abs(idL[3])==11) or (abs(idL[3])==13 and lep_iso[3]<0.35)
-            lep3_failed = not (lep_tight[2] and iso_lep_2)
-            lep4_failed = not (lep_tight[3] and iso_lep_3)
+            #iso_lep_2 = (abs(idL[2])==11) or (abs(idL[2])==13 and lep_iso[2]<0.35)
+            #iso_lep_3 = (abs(idL[3])==11) or (abs(idL[3])==13 and lep_iso[3]<0.35)
+            #lep3_failed = not (lep_tight[2] and iso_lep_2)
+            #lep4_failed = not (lep_tight[3] and iso_lep_3)
             # lep3_failed = not (lep_tight[2] and ((abs(idL[2])==11) or (abs(idL[2])==13 and lep_iso[2]<0.35)))
             # lep4_failed = not (lep_tight[3] and ((abs(idL[3])==11) or (abs(idL[3])==13 and lep_iso[3]<0.35)))
+
+            ### Muon MVA
+            lep3_failed = not (lep_tight[2])
+            lep4_failed = not (lep_tight[3])
+            ### Muon MVA
 
             nFailedLeptonsZ2 = lep3_failed + lep4_failed
             #nFailedLeptonsZ2 = not(lep_tight[2] and ((abs(idL[2])==11) or (abs(idL[2])==13 and lep_iso[2]<0.35))) + not(lep_tight[3] and ((abs(idL[3])==11) or (abs(idL[3])==13 and lep_iso[3]<0.35)))

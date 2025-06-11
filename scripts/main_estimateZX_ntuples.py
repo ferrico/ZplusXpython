@@ -1,10 +1,13 @@
 import ROOT
 from scripts.helpers.estimateZX import estimateZX
-from constants.analysis_params import LUMI_INT_2018_Jake
+from constants.analysis_params import LUMI_INT_2022postEE,LUMI_INT_2018_UL
 from sidequests.data.filepaths import fakerates_WZremoved
 
 # outfile_dir = "/blue/avery/rosedj1/ZplusXpython/data/controlreg_OS/20210802"
-outfile_dir = "/cmsuf/data/store/user/t2/users/rosedj1/ZplusXpython/rootfiles/test"
+outdir_rootfile = "/eos/user/y/yujil/HZZRun3Share/ZXCR/Data2022preEE/"
+outdir_rootfile = "/eos/user/y/yujil/HZZRun3Share/ZXCR/Data2022postEE/"
+outdir_rootfile = "./MinorOne/"
+outfile_dir = "./MinorOne/"
 suffix = ""
 overwrite = 0
 
@@ -12,16 +15,36 @@ overwrite = 0
 file_fakerates_WZremoved = fakerates_WZremoved
 
 filename_dct = {
-    # "Data" : "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/Data/fullstats/ZL_ZLL_CR/Data_2018_NoDuplicates_vxbs.root",  # n_evts_tot = 3,404,111
-    # "ZZ"   : "/cmsuf/data/store/user/t2/users/rosedj1/HiggsMassMeasurement/Samples/skim2L/MC/fullstats/ZL_ZLL_CR/ZZTo4L_TuneCP5_13TeV_powheg_pythia8_2018.root",
-    "Data" : "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/Data/2018/fullstats/TRASH/MuonEG_skimmed_test.root",
-    "ZZ"   : "/cmsuf/data/store/user/t2/users/rosedj1/Samples/skim2L/MC/2018/fullstats/skimmedbranches/ZZTo4L_TuneCP5_13TeV_powheg_pythia8_2018_veryfewbranches.root",
-}
+
+    #### 2022preEE
+    #"Data" : "/eos/user/y/yujil/HZZRun3Share/ZXCR/Data2022CD_noDuplicates.root",
+    #"ZZ"   : "/eos/user/y/yujil/HZZRun3Share/ZXCR/ZZto4L_TuneCP5_13p6TeV_powheg-pythia8.root",
+    #"TT"   : "/eos/user/y/yujil/HZZRun3Share/ZXCR/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8.root",
+    #"DY50"   : "/eos/user/y/yujil/HZZRun3Share/ZXCR/DYTo2L_MLL-50_TuneCP5_13p6TeV_pythia8.root",
+    #### 2022preEE
+
+    #### 2022postEE
+#    "Data" : "/eos/user/y/yujil/HZZRun3Share/ZXCREFG/Data2022EFG_noDuplicates.root",
+#    "ZZ" : "/eos/user/y/yujil/HZZRun3Share/ZXCREFG/ZZto4L_TuneCP5_13p6TeV_powheg-pythia8.root",
+#    "TT" : "/eos/user/y/yujil/HZZRun3Share/ZXCREFG/TTto2L2Nu_TuneCP5_13p6TeV_powheg-pythia8.root",
+#    "DY50" : "/eos/user/y/yujil/HZZRun3Share/ZXCREFG/DYJetsToLL_M-50_TuneCP5_13p6TeV-madgraphMLM-pythia8.root",
+    #### 2022postEE
+
+
+    #### Run 2
+    "Data" : "/eos/user/f/ferrico/MinorOne/Data_SingleMuonEgamma_minorOne_noDuplicates.root",
+    "ZZ" : "/eos/user/f/ferrico/MinorOne/ZZTo4L_MinorOne.root",
+    "TT" : "/eos/user/f/ferrico/MinorOne/TTTo2L2Nu_MinorOne.root",
+    "DY50" : "/eos/user/f/ferrico/MinorOne/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX_minorOne.root",
+    #### Run 2
+
+    }
 
 print("\nSecond stage of processing (Creation of ZX SR contributions for Data and ZZ.\n")
 
 for name, filepath in filename_dct.items():
     inFile =  ROOT.TFile.Open(filepath, "READ")
+    tree = inFile.Get("Events")
     tree = inFile.Get("passedEvents")
     n_evts = tree.GetEntries()
     print(
@@ -32,5 +55,5 @@ for name, filepath in filename_dct.items():
     )
     estimateZX(FakeRateFile=file_fakerates_WZremoved, tree=tree,
                Nickname=name, outfile_dir=outfile_dir, suffix=suffix,
-               overwrite=overwrite, lumi=LUMI_INT_2018_Jake)
+               overwrite=overwrite, lumi=LUMI_INT_2018_UL)#LUMI_INT_2022postEE)
     inFile.Close()

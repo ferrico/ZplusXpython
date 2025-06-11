@@ -28,7 +28,7 @@ outfile = args.outfile
 overwrite = args.overwrite
 year = args.year
 
-check_overwrite(outfile, overwrite=overwrite)
+#check_overwrite(outfile, overwrite=overwrite)
 
 f = TFile(infile_data)
 f_wz = TFile(infile_wz_rmv)
@@ -101,8 +101,8 @@ elif year == 2017:
     y_max_muon = 0.35
     y_min_elec = 0.01
     y_max_elec = 0.35
-elif year == 2018:
-    y_min_muon = 0.04
+elif year == 2018 or year == 2022:
+    y_min_muon = 0.00
     y_max_muon = 0.35
     y_min_elec = 0.01
     y_max_elec = 0.35

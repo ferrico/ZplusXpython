@@ -2,9 +2,24 @@ import ROOT
 from Utils_Python.Utils_Files import check_overwrite
 
 overwrite = 0
+######## 2022preEE
+infile_Data = "/eos/user/y/yujil/HZZRun3Share/ZXCR/Data2022CD_noDuplicates/Hist_Data_test01.root"
+infile_WZ   = "/eos/user/y/yujil/HZZRun3Share/ZXCR/Data2022CD_noDuplicates/Hist_MC_WZ_test01.root"
+######## 2022preEE
 
-infile_Data = "/blue/avery/rosedj1/ZplusXpython/data/20210802_alljake/Hist_Data.root"
-infile_WZ   = "/blue/avery/rosedj1/ZplusXpython/data/20210802_alljake/Hist_MC_WZ-ext1-v2.root"
+######## 2022postEE
+infile_Data = "/eos/user/y/yujil/HZZRun3Share/ZXCR/Data2022postEE/Hist_Data_test01.root"
+infile_WZ   = "/eos/user/y/yujil/HZZRun3Share/ZXCR/Data2022postEE/Hist_MC_WZ_test01.root"
+######## 2022postEE
+
+
+####### MinorOne
+infile_Data = "./Muon_MVA/Hist_Data_test01.root"
+infile_WZ   = "./Muon_MVA/Hist_MC_WZ_test01.root"
+
+infile_Data = "./Muon_MVAsip8_20230/Hist_Data_test_NEW.root"
+infile_WZ   = "./Muon_MVAsip8_20230/Hist_MC_WZ_test_NEW.root"
+
 
 file_data = ROOT.TFile(infile_Data, "READ")
 print(f"Data file opened.")

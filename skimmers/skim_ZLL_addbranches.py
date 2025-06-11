@@ -56,6 +56,7 @@ def get_evt_weight(name, evt, isMCzz, LUMI_INT=57750):
     Generally:
     new_weight = old_weight * (xs * L_int) / N_events_from_MC
     """
+    print("FILIPPO =============================")
     if name in "Data":
         return 1
     elif name in "ZZ":
@@ -73,7 +74,7 @@ def get_evt_weight(name, evt, isMCzz, LUMI_INT=57750):
     # if (name == "WZ"):
     #     return wt * 4.42965 * LUMI_INT/sum_weights
 
-def check_which_Z2_leps_failed(lep_tight, idL, lep_iso):
+def check_which_Z2_leps_failed(lep_tight, idL, lep_iso): #### I have changed all values from 0.35 to 999
     """Return code telling which leptons from Z2 failed tight, iso selection.
 
     Parameters
@@ -89,9 +90,16 @@ def check_which_Z2_leps_failed(lep_tight, idL, lep_iso):
     3, if second lep from Z2 failed.
     5, if both leps from Z2 failed.
     """
+    print("FILIPPO =============================")
     # See if leps 3 and 4 failed.
-    lep3_failed = not(lep_tight[2] and ((abs(idL[2])==11) or (abs(idL[2])==13 and lep_iso[2]<0.35)))
-    lep4_failed = not(lep_tight[3] and ((abs(idL[3])==11) or (abs(idL[3])==13 and lep_iso[3]<0.35)))
+    #lep3_failed = not(lep_tight[2] and ((abs(idL[2])==11) or (abs(idL[2])==13 and lep_iso[2]<0.35)))
+    #lep4_failed = not(lep_tight[3] and ((abs(idL[3])==11) or (abs(idL[3])==13 and lep_iso[3]<0.35)))
+
+    ### Muon MVA
+    lep3_failed = not(lep_tight[2])
+    lep4_failed = not(lep_tight[3])
+    ### Muon MVA
+
     if lep3_failed and (not lep4_failed):
         return 2
     elif (not lep3_failed) and lep4_failed:
@@ -101,6 +109,43 @@ def check_which_Z2_leps_failed(lep_tight, idL, lep_iso):
     else:
         return 0
 
+
+def check_which_Z1_leps_failed(lep_tight, idL, lep_iso): #### I have changed all values from 0.35 to 999
+    """Return code telling which leptons from Z2 failed tight, iso selection.
+
+    Parameters
+    ----------
+    lep_tight : list
+    id_L : list
+    lep_iso : list
+    
+    Returns
+    -------
+    0, if neither lep from Z2 failed.
+    2, if first lep from Z2 failed.
+    3, if second lep from Z2 failed.
+    5, if both leps from Z2 failed.
+    """
+    print("FILIPPO =============================")
+    # See if leps 3 and 4 failed.
+    lep3_failed = not(lep_tight[0] and ((abs(idL[0])==11) or (abs(idL[0])==13 and lep_iso[0]<0.35)))
+    lep4_failed = not(lep_tight[1] and ((abs(idL[1])==11) or (abs(idL[1])==13 and lep_iso[1]<0.35)))
+
+    ### Muon MVA
+    lep3_failed = not(lep_tight[0])
+    lep4_failed = not(lep_tight[1])
+    ### Muon MVA
+
+    if lep3_failed and (not lep4_failed):
+        return 2
+    elif (not lep3_failed) and lep4_failed:
+        return 3
+    elif lep3_failed and lep4_failed:
+        return 5
+    else:
+        return 0
+
+print("FILIPPO =============================")
 # Get fake rate hists.
 file_FR = rt.TFile(infile_FR_wz_removed)
 print("Retrieving fake rates...")

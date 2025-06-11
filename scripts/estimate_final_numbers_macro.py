@@ -1,8 +1,8 @@
 import ROOT
 import math
 
-infile_Data = "../data/estimateZX_Data.root"
-infile_ZZ = "../data/estimateZX_ZZ.root"
+infile_Data = "./MinorOne/estimateZX_Data.root"
+infile_ZZ = "./MinorOne/estimateZX_ZZ.root"
 
 def _main():
     fileData = ROOT.TFile (infile_Data, "READ")

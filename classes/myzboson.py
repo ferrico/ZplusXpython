@@ -47,6 +47,14 @@ class MyZboson:
             return False
         return True
     
+
+    def get_pt(self):
+        """Return the pt of this Z boson from its LorentzVector.
+        
+        NOTE: By default uses lep_FSR kinematics.
+        """
+        return self.get_LorentzVector().Pt()
+
     def get_mass(self):
         """Return the mass of this Z boson from its LorentzVector.
         
@@ -173,6 +181,11 @@ def makes_valid_zcand(lep1, lep2, wcf_ok=False, verbose=False):
             Either wrong charge (e.g. e+e+, mu-mu-, etc.)
             or wrong flavor (e+mu- or e-mu+).
     """
+    #print(str(lep1.lid) + " " + str(lep2.lid))
+    #print(str(lep1.ltightId) + " " + str(lep2.ltightId)) 
+    #if(lep1.ltightId != lep2.ltightId):
+    #    return False
+
     # Check OSSF:
     if not wcf_ok:
         if (lep1.lid + lep2.lid) != 0:
@@ -189,6 +202,7 @@ def makes_valid_zcand(lep1, lep2, wcf_ok=False, verbose=False):
     zcand = lep1.get_LorentzVector(include_FSR=True) + \
             lep2.get_LorentzVector(include_FSR=True)
     z_mass = zcand.M()
+    #print("z_mass = " + str(z_mass))
     if (z_mass < 12):
         if verbose:
             print(f"  PAIRING FAILED: Zmass ({z_mass:.6f}) < 12 GeV.")

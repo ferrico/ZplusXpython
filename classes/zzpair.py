@@ -50,6 +50,10 @@ class ZZPair:
         self.smartcut_ZapassesZ1sel = smartcut_ZapassesZ1sel
         self.valid_cand_osmethod = None # After passes_redbkg_osmethod_sel().
 
+    def get_pt(self):
+        """Return the pt(4l) of this ZZPair."""
+        return self.get_LorentzVector().Pt()
+
     def get_m4l(self):
         """Return the m(4l) of this ZZPair."""
         return self.get_LorentzVector().M()
@@ -126,7 +130,7 @@ class ZZPair:
                 if self.verbose: self.print_info()
             self.valid_cand_osmethod = False
             return False
-        
+
         # Step 1. Should already be taken into account, but just in case.
         if self.z_fir.has_overlapping_leps(self.z_sec):
             if self.explain_skipevent:
@@ -146,6 +150,7 @@ class ZZPair:
                 if self.verbose: self.print_info()
             self.valid_cand_osmethod = False
             return False
+
         # If m(Z2) is closer to PDG mass, then it MAY supercede current Z1.
         if self.z_sec.has_closer_mass_to_ZPDG(self.z_fir):
             if allow_z1_failing_leps or self.z_sec.made_from_tight_leps:
@@ -472,6 +477,17 @@ def select_better_zzcand(
             winning_zz = zzcand2
             winning_zz_ndx = ndx_sec
     else:
+        #print("Not same leptons:")
+        if verbose:
+            print("ZZ_1 (Z2_pt) = " + str(zzcand1.z_sec.get_pt()) + " ZZ_2 (Z2_pt) = " + str(zzcand2.z_sec.get_pt()))
+
+        if zzcand1.z_sec.get_pt() < zzcand2.z_sec.get_pt():
+            if verbose:
+                print("checked pt of Z2")
+                print("ZZ_1 (Z2_pt) = " + str(zzcand1.z_sec.get_pt()) + " ZZ_2 (Z2_pt) = " + str(zzcand2.z_sec.get_pt()))
+            winning_zz = zzcand2
+            winning_zz_ndx = ndx_sec
+
         raise ValueError(
                 f"  ZZ cands have different leptons.\n"
                 f"  Choose cand with higher Kd. HOW???"
@@ -566,7 +582,6 @@ def get_best_zzcand_single_quartet(
         if verbose or explain_skipevent:
             print("  MyLep list does not fall into 2P2F or 3P1F CR.")
         return empty_ls
-    
     # Build all general Z candidates:
     # 12 < mll < 120 GeV.
     # OSSF leptons.

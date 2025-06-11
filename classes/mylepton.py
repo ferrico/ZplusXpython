@@ -6,7 +6,7 @@ class MyLepton:
     def __init__(self,
                  lpt, leta, lphi, lmass,
                  lid, ltightId, lRelIsoNoFSR,
-                 lpt_NoFSR, leta_NoFSR, lphi_NoFSR, lmass_NoFSR,
+                 lpt_NoFSR, leta_NoFSR, lphi_NoFSR, lmass_NoFSR, lLowEle, 
                  ndx_lepvec=None):
         """When built, this MyLepton will determine if it's tight or loose.
         
@@ -29,7 +29,7 @@ class MyLepton:
         self.leta_NoFSR = leta_NoFSR
         self.lphi_NoFSR = lphi_NoFSR
         self.lmass_NoFSR = lmass_NoFSR
-
+        self.lLowEle = lLowEle
         self.ndx_lepvec = ndx_lepvec  # Index of lepton in vectors like lep_pt.
         
         self.is_loose = False
@@ -65,8 +65,12 @@ class MyLepton:
         """
         if not self.ltightId:
             return False
-        if (abs(self.lid) == 13) and (self.lRelIsoNoFSR > 0.35):
-            return False
+#        if (abs(self.lid) == 11 and self.lpt < 7 and self.lLowEle < 2.5):
+#        if (abs(self.lid) == 11):
+#            return False
+
+        ### if (abs(self.lid) == 13) and (self.lRelIsoNoFSR > 0.35): ### MVA Changed from 0.35 to 999
+        ###    return False
         if not self.passes_looselep_selection():
             return False
         return True
@@ -118,24 +122,28 @@ class MyLepton:
 
 def make_filled_mylep_ls(tree):
     """Return list of MyLepton objs filled with lep info from this event."""
-    assert len(tree.lepFSR_pt) == \
-            len(tree.lepFSR_eta) == \
-            len(tree.lepFSR_phi) == \
-            len(tree.lepFSR_mass) == \
-            len(tree.lep_id) == \
-            len(tree.lep_tightId) == \
-            len(tree.lep_RelIsoNoFSR) == \
-            len(tree.lep_pt) == \
-            len(tree.lep_eta) == \
-            len(tree.lep_phi) == \
-            len(tree.lep_mass)
+#    assert len(tree.lepFSR_pt) == \
+#           len(tree.lepFSR_eta) == \
+#           len(tree.lepFSR_phi) == \
+#           len(tree.lep_mass) == \
+#           len(tree.lep_id) == \
+#           len(tree.lep_tightId) == \
+#           len(tree.lep_RelIsoNoFSR) == \
+#           len(tree.lep_pt) == \
+#           len(tree.lep_eta) == \
+#           len(tree.lep_phi) == \
+#           len(tree.lep_mass)
     mylep_ls = []
     for ndx, (lpt, leta, lphi, lmass, lid, ltightId, lRelIsoNoFSR,
-              lpt_NoFSR, leta_NoFSR, lphi_NoFSR, lmass_NoFSR) in enumerate(
-        zip(tree.lepFSR_pt,
+              lpt_NoFSR, leta_NoFSR, lphi_NoFSR, lmass_NoFSR, lLowEle) in enumerate(
+        zip(tree.lepFSR_pt, #NANO
             tree.lepFSR_eta,
             tree.lepFSR_phi,
-            tree.lepFSR_mass,
+            tree.lep_mass,
+#        zip(tree.lep_pt,
+#            tree.lep_eta,
+#            tree.lep_phi,
+#            tree.lep_mass,
             tree.lep_id,
             tree.lep_tightId,
             tree.lep_RelIsoNoFSR,
@@ -143,11 +151,12 @@ def make_filled_mylep_ls(tree):
             tree.lep_eta,
             tree.lep_phi,
             tree.lep_mass,
+            tree.lep_lowEleBDT
            )
         ):
         
         mylep = MyLepton(lpt, leta, lphi, lmass, lid, ltightId, lRelIsoNoFSR,
-                         lpt_NoFSR, leta_NoFSR, lphi_NoFSR, lmass_NoFSR)
+                         lpt_NoFSR, leta_NoFSR, lphi_NoFSR, lmass_NoFSR, lLowEle)
         mylep.ndx_lepvec = ndx
         mylep_ls.extend((mylep,))
     return mylep_ls
@@ -168,7 +177,7 @@ def pass_lepton_kinem_selection(lid, lpt_NoFSR, leta_NoFSR):
     """
     if abs(lid) == 11:
         # Electron selections.
-        if lpt_NoFSR < 7:
+        if lpt_NoFSR < 3:#7:
             return False
         if abs(leta_NoFSR) > 2.5:
             return False
@@ -176,7 +185,7 @@ def pass_lepton_kinem_selection(lid, lpt_NoFSR, leta_NoFSR):
         return True
     elif abs(lid) == 13:
         # Muon selections.
-        if lpt_NoFSR < 5:
+        if lpt_NoFSR < 3:#5: MinorOne
             return False
         if abs(leta_NoFSR) > 2.4:
             return False

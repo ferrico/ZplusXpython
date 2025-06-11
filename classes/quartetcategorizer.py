@@ -155,7 +155,6 @@ class QuartetCategorizer:
                     smartcut_ZapassesZ1sel=smartcut_ZapassesZ1sel,
                     run=run, lumi=lumi, event=event, entry=entry
                     )
-
             if len(ls_zzcand) == 0:
                 # No good ZZ candidate found.
                 continue

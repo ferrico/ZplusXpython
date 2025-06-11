@@ -42,7 +42,7 @@ from sidequests.containers.hists_th2 import (
     )
 from sidequests.classes.cjlstflag import CjlstFlag
 from scripts.helpers.analyzeZX import (
-    get_evt_weight, check_which_Z2_leps_failed,
+    get_evt_weight, check_which_Z2_leps_failed, check_which_Z1_leps_failed,
     retrieve_FR_hists, get_fakerate_and_error_mylep,
     calc_fakerate_up, calc_fakerate_down,
     calc_wgt_2p2f_cr, calc_wgt_3p1f_cr,
@@ -95,12 +95,12 @@ def reset_neg_frs_to_zero(fr, fr_up, fr_dn):
     Otherwise return the original fake rates.
     """
     if any(x < 0 for x in (fr, fr_up, fr_dn)):
-        print(
-            f"!!! Negative fake rate found (probably a high pT muon) !!!\n"
-            f"!!!  fr_down={fr_dn:.6f}, fr={fr:.6f}, fr_up={fr_up:.6f} !!!\n"
-            f"!!! Resetting to 0 for now. !!!"
-            )
-        return (0, 0, 0)
+#        print(
+#            f"!!! Negative fake rate found (probably a high pT muon) !!!\n"
+#            f"!!!  fr_down={fr_dn:.6f}, fr={fr:.6f}, fr_up={fr_up:.6f} !!!\n"
+#            f"!!! Resetting to 0 for now. !!!"
+#            ) #MinorOne
+        return (fr, 0, 0)
     else:
         return (fr, fr_up, fr_dn)
 
@@ -288,7 +288,7 @@ def select_evts_2P2F_3P1F_multiquartets(
     name="", int_lumi=-1,
     start_at_evt=0, break_at_evt=-1,
     fill_hists=False,
-    explain_skipevent=False, verbose=False, print_every=50000,
+    explain_skipevent=False, verbose=True, print_every=50000,
     smartcut_ZapassesZ1sel=False,
     overwrite=False,
     skip_mass4l_lessthan0=False,
@@ -477,7 +477,7 @@ def select_evts_2P2F_3P1F_multiquartets(
     
     # Make pointers to store new values. 
     ptr_finalState = np.array([0], dtype=int)
-    ptr_nZXCRFailedLeptons = np.array([0], dtype=int)
+    #ptr_nZXCRFailedLeptons = np.array([0], dtype=int)
     ptr_is2P2F = np.array([0], dtype=int)  # Close enough to bool lol.
     ptr_is3P1F = np.array([0], dtype=int)
     ptr_isData = np.array([0], dtype=int)
@@ -535,7 +535,7 @@ def select_evts_2P2F_3P1F_multiquartets(
 
         # Modify existing values of branches.
         new_tree.SetBranchAddress("finalState", ptr_finalState)
-        new_tree.SetBranchAddress("nZXCRFailedLeptons", ptr_nZXCRFailedLeptons)
+        #new_tree.SetBranchAddress("nZXCRFailedLeptons", ptr_nZXCRFailedLeptons)
         if recalc_masses:
             new_tree.SetBranchAddress("mass4l", ptr_mass4l)
             new_tree.SetBranchAddress("massZ1", ptr_massZ1)
@@ -559,11 +559,28 @@ def select_evts_2P2F_3P1F_multiquartets(
         print_periodic_evtnum(evt_num, n_tot, print_every=print_every)
 
         tree.GetEntry(evt_num)
-        run = tree.Run
-        lumi = tree.LumiSect
-        event = tree.Event
+        #run = tree.Run # MINIAOD
+        #lumi = tree.LumiSect # MINIAOD
+        #event = tree.Event # MINIAOD
+        run = tree.run # NANOAOD
+        lumi = tree.luminosityBlock # NANOAOD
+        event = tree.event # NANOAOD
         evt_id = f"{run} : {lumi} : {event}"
-        
+        #if(run ==  362107 and lumi == 115 and event == 241289571):# and event != 69085507 and event != 64490152 and event != 9424315):
+#        if(event==652113121
+#                or event== 50000882 or event==783713309 #or event==849206402
+#                or event==71729403 or event==450440686 or event==859162242
+#                or event==712474244 or event==131019304 or event==721835426
+#                or event==698440082 or event==662823607 or event==994533298
+#                or event==3368994270 or event==513800027 or event==2281595117
+#                or event==167227478
+#                ):
+#            print(str(run) + ":" + str(lumi) + ":" + str(event))
+        #         continue
+#        else:
+#            continue
+        #            print(str(run) + ":" + str(lumi) + ":" + str(event))
+
         ###################################
         #=== Initial event selections. ===#
         ###################################
@@ -604,11 +621,13 @@ def select_evts_2P2F_3P1F_multiquartets(
                 print_skipevent_msg("n_leps < 4", evt_num, run, lumi, event)
             evt_info_d["n_evts_lt4_leps"] += 1
             continue
-            
+
+        
         # Initialize ALL leptons (possibly >=4 leptons).
         mylep_ls = make_filled_mylep_ls(tree)
         n_leps_passing = get_n_myleps_passing(mylep_ls)
         n_leps_failing = get_n_myleps_failing(mylep_ls)
+
         if verbose:
             print(
                 f"    Num leptons passing tight sel: {n_leps_passing}\n"
@@ -617,8 +636,9 @@ def select_evts_2P2F_3P1F_multiquartets(
             for mylep in mylep_ls:
                 mylep.print_info(oneline=True)
 
+
         if n_leps_passing < 2:
-            evt_info_d["n_evts_lt2tightleps"] += 1
+#            evt_info_d["n_evts_lt2tightleps"] += 1
             if explain_skipevent:
                 msg = f"  Contains {n_leps_passing} (< 2) tight leps."
                 print_skipevent_msg(msg, evt_num, run, lumi, event)
@@ -667,6 +687,7 @@ def select_evts_2P2F_3P1F_multiquartets(
         n_saved_quartets_2p2f = 0
         found_matching_lep_Hindex = False
         overall_evt_label = ''  # Either '3P1F' or '2P2F'.
+
         for ndx_zzcand, zzcand in enumerate(ls_valid_ZZcands_OS, 1):
             cr_str = zzcand.get_str_cr_os_method().upper()
 
@@ -714,7 +735,7 @@ def select_evts_2P2F_3P1F_multiquartets(
             n_dataset_tot = float(genwgts_dct[name])
             evt_weight_calcd = get_evt_weight(
                 dct_xs=dct_xs, Nickname=name, lumi=int_lumi, event=tree,
-                n_dataset_tot=n_dataset_tot, orig_evt_weight=tree.eventWeight
+                n_dataset_tot=n_dataset_tot, orig_evt_weight=1#tree.eventWeight #NANOAOD
                 )
 
             ##############################
@@ -722,23 +743,33 @@ def select_evts_2P2F_3P1F_multiquartets(
             ##############################
             # See which leptons from Z2 failed.
             n_fail_code = check_which_Z2_leps_failed(zzcand)
+            n_fail_code_fromZ1 = check_which_Z2_leps_failed(zzcand)
+            
+#            print(str(n_fail_code_fromZ1) + " from Z1")
+#            print(str(n_fail_code) + " from Z2")
+#            if(n_fail_code_fromZ1 == 2 or n_fail_code_fromZ1 == 3 or n_fail_code_fromZ1 == 5):
+#                print("At least 1 FAIL in Z1")
+#                if(n_fail_code == 2 or n_fail_code == 3 or n_fail_code == 5):
+#                    print("At least 1 FAIL in Z2.")
+#                    n_fail_code = 0
+#                    print("Exit with n_fail_code = " + str(n_fail_code))
 
             # mylep1_fromz1 = zzcand.z_fir.mylep1
             # mylep2_fromz1 = zzcand.z_fir.mylep2
             mylep1_fromz2 = zzcand.z_sec.mylep1
             mylep2_fromz2 = zzcand.z_sec.mylep2
-
             #=====================#
             #=== 3P1F quartet. ===#
             #=====================#
             if n_fail_code == 2:
+                #print("n_fail_code==2")
                 # First lep from Z2 failed.
                 # NOTE: Turns out this will never trigger for OS Method!
                 # This is due to the way that the 3P1F quartets are built.
                 # The 1 failing lepton is always placed as the 4th lepton.
                 # Therefore, fr3 (the 4th lepton) will always be != 0.
-                assert cr_str == '3P1F'
-                assert mylep1_fromz2.is_loose
+                #assert cr_str == '3P1F'
+                #assert mylep1_fromz2.is_loose
                 fr2, fr2_err = get_fakerate_and_error_mylep(
                     mylep1_fromz2,
                     h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end,
@@ -761,9 +792,11 @@ def select_evts_2P2F_3P1F_multiquartets(
                 new_weight_up = (fr2_up / (1 - fr2_up)) * evt_weight_calcd
                 
             elif n_fail_code == 3:
+                #print("n_fail_code==3")
+                #print(" n_fail_code == 3")
                 # Second lep from Z2 failed.
-                assert cr_str == '3P1F'
-                assert mylep2_fromz2.is_loose
+                #assert cr_str == '3P1F'
+                #assert mylep2_fromz2.is_loose
                 
                 # Penultimate (2nd) lepton passed tight sel so FR = 0.
                 fr2 = 0
@@ -772,9 +805,10 @@ def select_evts_2P2F_3P1F_multiquartets(
                 fr2_up = 0
                 fr3, fr3_err = get_fakerate_and_error_mylep(
                     mylep2_fromz2,
-                    h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end,
+                    h_FRe_bar, h_FRe_end, h_FRmu_bar, h_FRmu_end, 
                     verbose=verbose
                     )
+                #print(str(fr3) + " " + str(evt_weight_calcd))
                 fr3_down = calc_fakerate_down(fr3, fr3_err)  # Scale down.
                 fr3_up = calc_fakerate_up(fr3, fr3_err)  # Scale up.
                 # Check if negative fake rates (happens with high pT leps).
@@ -782,6 +816,7 @@ def select_evts_2P2F_3P1F_multiquartets(
                     fr3, fr3_up, fr3_down
                     )
                 # Use fake rates to calculate new event weight.
+                #print(str(fr3) + " " + str(evt_weight_calcd))
                 new_weight_down = (fr3_down / (1-fr3_down)) * evt_weight_calcd
                 new_weight = (fr3 / (1-fr3)) * evt_weight_calcd
                 new_weight_up = (fr3_up / (1 - fr3_up)) * evt_weight_calcd
@@ -790,6 +825,8 @@ def select_evts_2P2F_3P1F_multiquartets(
             #=== 2P2F quartet. ===#
             #=====================# 
             elif n_fail_code == 5:
+                #print("n_fail_code==5")
+                #print(" n_fail_code == 5")
                 # Both leps failed.
                 assert cr_str == '2P2F'
                 fr2, fr2_err = get_fakerate_and_error_mylep(
@@ -829,6 +866,20 @@ def select_evts_2P2F_3P1F_multiquartets(
                     new_weight_2p2fin3p1f_down = 0
                     new_weight_2p2fin3p1f = 0
                     new_weight_2p2fin3p1f_up = 0
+            else:
+                #print("n_fail_code==BHU == " + str(n_fail_code))
+                fr3 = 0
+                fr3_err = 0
+                fr3_down = 0
+                fr3_up = 0
+                fr2 = 0
+                fr2_err = 0
+                fr2_down = 0
+                fr2_up = 0
+                new_weight_down = 0
+                new_weight = 0
+                new_weight_up = 0
+            #print("weight = " + str(new_weight_down))
 
             if verbose:
                 announce(f"Valid ZZ cand is {cr_str}.")
@@ -841,25 +892,32 @@ def select_evts_2P2F_3P1F_multiquartets(
                     f"  3, if second lep from Z2 failed\n"
                     f"  5, if both leps from Z2 failed\n"
                     f"  ===========================\n"
-                    f"  fr2_down={fr2_down:.6f}, fr3_down={fr3_down:.6f}\n"
-                    f"       fr2={fr2:.6f},      fr3={fr3:.6f}\n"
-                    f"    fr2_up={fr2_up:.6f},   fr3_up={fr3_up:.6f}\n"
-                    f"         tree.eventWeight = {tree.eventWeight:.6f}\n"
-                    f"         evt_weight_calcd = {evt_weight_calcd:.6f}\n"
-                    f"          new_weight_down = {new_weight_down:.6f}\n"
-                    f"               new_weight = {new_weight:.6f}\n"
-                    f"            new_weight_up = {new_weight_up:.6f}"
+                    #f"  fr2_down={fr2_down:.6f}, fr3_down={fr3_down:.6f}\n"
+                    #f"       fr2={fr2:.6f},      fr3={fr3:.6f}\n"
+                    #f"    fr2_up={fr2_up:.6f},   fr3_up={fr3_up:.6f}\n"
+                    #f"         tree.eventWeight = {tree.eventWeight:.6f}\n"
+                    #f"         evt_weight_calcd = {evt_weight_calcd:.6f}\n"
+                    #f"          new_weight_down = {new_weight_down:.6f}\n"
+                    #f"               new_weight = {new_weight:.6f}\n"
+                    #f"            new_weight_up = {new_weight_up:.6f}"
                     )
                 zzname=f"SELECTED ZZ CAND ({ndx_zzcand}/{n_valid_ZZcands_OS})"
                 zzcand.print_info(name=zzname)
-            
+                
             # Save this quartet in TTree. Fill branches.
             ptr_finalState[0] = dct_finalstates_str2int[
                                     zzcand.get_finalstate()
                                     ]
-            ptr_nZXCRFailedLeptons[0] = zzcand.get_num_failing_leps()
+            #ptr_nZXCRFailedLeptons[0] = zzcand.get_num_failing_leps()
             ptr_is3P1F[0] = zzcand.check_valid_cand_os_3p1f()
             ptr_is2P2F[0] = zzcand.check_valid_cand_os_2p2f()
+            if(n_fail_code_fromZ1 == 2 or n_fail_code_fromZ1 == 3 or n_fail_code_fromZ1 == 5):
+            #    print("At least 1 FAIL in Z1")
+                if(n_fail_code == 0):
+                    #print("At least 1 FAIL in Z2.")
+                    ptr_is2P2F[0] = 0
+                    #print("ptr_is2P2F[0] = " + str(ptr_is2P2F[0]))
+
             ptr_isData[0] = isData
             ptr_isMCzz[0] = isMCzz
             ptr_fr2_down[0] = fr2_down
@@ -871,9 +929,9 @@ def select_evts_2P2F_3P1F_multiquartets(
             ptr_eventWeightFR_down[0] = new_weight_down
             ptr_eventWeightFR[0] = new_weight
             ptr_eventWeightFR_up[0] = new_weight_up
-            ptr_eventWeightFR_2P2Fin3P1F_down[0] = new_weight_2p2fin3p1f_down
-            ptr_eventWeightFR_2P2Fin3P1F[0] = new_weight_2p2fin3p1f
-            ptr_eventWeightFR_2P2Fin3P1F_up[0] = new_weight_2p2fin3p1f_up
+            ptr_eventWeightFR_2P2Fin3P1F_down[0] = -1#new_weight_2p2fin3p1f_down
+            ptr_eventWeightFR_2P2Fin3P1F[0] = -1#new_weight_2p2fin3p1f
+            ptr_eventWeightFR_2P2Fin3P1F_up[0] = -1#new_weight_2p2fin3p1f_up
             lep_idcs = zzcand.get_mylep_indices(in_pT_order=True)
             ptr_lep_RedBkgindex[0] = lep_idcs[0]
             ptr_lep_RedBkgindex[1] = lep_idcs[1]
@@ -907,6 +965,11 @@ def select_evts_2P2F_3P1F_multiquartets(
                 ptr_massZ1[0] = zzcand.z_fir.get_mass()
                 ptr_massZ2[0] = zzcand.z_sec.get_mass()
                 ptr_mass4l[0] = zzcand.get_m4l()
+                #print("MASS = " + str(zzcand.get_m4l()))
+                #print("Pt = " + str(zzcand.get_pt()))
+                #print("Z1 = " + str(zzcand.z_fir.get_mass()))
+                #print("Z2 = " + str(zzcand.z_sec.get_mass()))
+                #print("Z2 pt = " + str(zzcand.z_sec.get_pt()))
                 # Getting an IndexError since there is a discrepancy in the length
                 # of vectors, like `lep_pt` and `vtxLepFSR_BS_pt`.
                 # ptr_mass4l[0] = calc_mass4l_from_idcs(
@@ -1031,7 +1094,6 @@ def fillhists_osmethod_cjlstntuple(
         if evt_num == break_at:
             break
         t.GetEntry(evt_num)
-
         is_3p1f = (t.CRflag == CjlstFlag['CR3P1F'].value)
         is_2p2f = (t.CRflag == CjlstFlag['CR2P2F'].value)
         # Only want 2P2F or 3P1F events.
@@ -1304,9 +1366,9 @@ def make_ls_evtIDs_OSmethod(
         elif framework.lower() == "bbf":
             if not evt.passedZXCRSelection:
                 continue
-            if keep_2P2F and (evt.nZXCRFailedLeptons == 2):
+            if keep_2P2F and 1==1:#(evt.nZXCRFailedLeptons == 2): # MINIAOD
                 keep_evt = True
-            elif keep_3P1F and (evt.nZXCRFailedLeptons == 1):
+            elif keep_3P1F and 1==1: #(evt.nZXCRFailedLeptons == 1): # MINIAOD
                 keep_evt = True
 
         if keep_evt:
